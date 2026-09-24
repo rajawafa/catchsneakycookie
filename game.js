@@ -4,9 +4,10 @@
   const ROUND_SECONDS = 30;
   const GIFT_THRESHOLD = 50;
   const LUCKY_PRIZES = [
-    { name: "RM20 voucher", weight: 1 },
-    { name: "RM10 voucher", weight: 1 },
-    { name: "Set of 3 classic", weight: 1 }
+    { name: "RM20 Voucher", weight: 30 },
+    { name: "RM10 Voucher", weight: 30 },
+    { name: "FREE 1 CLASSIC COOKIE", weight: 20 },
+    { name: "FREE 1 SNEAKY DROP", weight: 20 }
   ];
   const giftDialog = document.querySelector("#gift-dialog");
   const giftOpen = document.querySelector("#gift-open");
@@ -122,9 +123,9 @@
   function paintPixelCat(element, cat) {
     // Eye anchors are measured within each sprite-sheet cell.
     const eyes = {
-      tam: [58, 48, 80, 44], abu: [49, 43, 68, 40],
-      comot: [50, 49, 72, 45], oyen: [50, 46, 71, 42],
-      tompok: [57, 37, 79, 34], miko: [50, 39, 72, 36]
+      tam: [58, 45, 80, 41], abu: [49, 40, 68, 37],
+      comot: [50, 43, 72, 42], oyen: [50, 39, 72, 37],
+      tompok: [57, 33, 79, 30], miko: [50, 35, 72, 33]
     }[cat.id];
     ["--eye-left-x", "--eye-left-y", "--eye-right-x", "--eye-right-y"].forEach((key, index) => {
       element.style.setProperty(key, `${eyes[index]}%`);
@@ -147,7 +148,7 @@
     CATS.forEach((cat) => {
       const card = document.createElement("button");
       card.type = "button";
-      card.className = `cat-card${cat.id === game.selected.id ? " is-selected" : ""}`;
+      card.className = `cat-card cat-card--${cat.id}${cat.id === game.selected.id ? " is-selected" : ""}`;
       card.setAttribute("aria-label", cat.name);
       card.setAttribute("aria-pressed", String(cat.id === game.selected.id));
       card.innerHTML = `
