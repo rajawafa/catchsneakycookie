@@ -1,31 +1,56 @@
 (() => {
   "use strict";
 
-  const ROUND_SECONDS = 60;
+  const ROUND_SECONDS = 30;
+  const GIFT_THRESHOLD = 50;
+  const LUCKY_PRIZES = [
+    { name: "RM20 voucher", weight: 1 },
+    { name: "RM10 voucher", weight: 1 },
+    { name: "Set of 3 classic", weight: 1 }
+  ];
+  const giftDialog = document.querySelector("#gift-dialog");
+  const giftOpen = document.querySelector("#gift-open");
+  document.querySelector("#gift-close").addEventListener("click", () => giftDialog.close());
+  giftOpen.addEventListener("click", () => {
+    if (giftOpen.disabled) return;
+    giftOpen.disabled = true;
+    giftOpen.classList.add("is-open");
+    playSound("special");
+    giftOpen.setAttribute("aria-label", "Opened gift");
+    const total = LUCKY_PRIZES.reduce((sum, prize) => sum + prize.weight, 0);
+    if (total <= 0) {
+      return;
+    }
+    let draw = Math.random() * total;
+    const prize = LUCKY_PRIZES.find((entry) => (draw -= entry.weight) < 0);
+    document.querySelector("#gift-prize").textContent = prize.name;
+  });
   // Leave blank to keep the in-game cookie shelf. Add a verified shop URL later to make the result CTA external.
   const COOKIE_SHOP_URL = "";
 
   const CATS = [
     { id: "tam", name: "Tam", label: "black cat", source: "assets/cats/tam.png", spriteX: "0%", spriteY: "0%" },
-    { id: "abu", name: "Abu", label: "brown patch", source: "assets/cats/abu.png", spriteX: "100%", spriteY: "0%" },
-    { id: "comot", name: "Comot", label: "calico", source: "assets/cats/comot.png", spriteX: "0%", spriteY: "50%" },
+    { id: "abu", name: "Abu", label: "orange and brown", source: "assets/cats/comot.png", spriteX: "0%", spriteY: "50%" },
+    { id: "comot", name: "Comot", label: "white belly and brown patches", source: "assets/cats/abu.png", spriteX: "100%", spriteY: "0%" },
     { id: "oyen", name: "Oyen", label: "orange tabby", source: "assets/cats/oyen.png", spriteX: "100%", spriteY: "50%" },
     { id: "tompok", name: "Tompok", label: "tuxedo", source: "assets/cats/tompok.png", spriteX: "0%", spriteY: "100%" },
     { id: "miko", name: "Miko", label: "green & white", source: "assets/cats/miko.png", spriteX: "100%", spriteY: "100%" }
   ];
 
   const CLASSIC_COOKIES = [
-    "assets/cookies/transparent/cookie-1-uniform.png",
-    "assets/cookies/transparent/cookie-2-uniform.png",
-    "assets/cookies/transparent/cookie-3-uniform.png",
-    "assets/cookies/transparent/cookie-4-uniform.png",
-    "assets/cookies/transparent/cookie-5-uniform.png"
+    { cat: "tam", src: "assets/cookies/transparent/cookie-1-uniform.png" },
+    { cat: "comot", src: "assets/cookies/transparent/cookie-2-uniform.png" },
+    { cat: "oyen", src: "assets/cookies/transparent/cookie-3-uniform.png" },
+    { cat: "tompok", src: "assets/cookies/transparent/cookie-4-uniform.png" },
+    { cat: "miko", src: "assets/cookies/transparent/cookie-5-uniform.png" },
+    { cat: "abu", src: "assets/cookies/transparent/cookie-abu.png" }
   ];
 
   const HAZARD_ASSETS = {
     fishbone: "assets/hazards/fishbone.png",
-    shoe: "assets/hazards/shoe.png",
-    bomb: "assets/hazards/bomb.png"
+    bomb: "assets/hazards/bomb.png",
+    banana: "assets/hazards/banana.png",
+    poop: "assets/hazards/poop.png"
   };
 
   const screens = Object.fromEntries([...document.querySelectorAll(".screen")].map((screen) => [screen.id.replace("-screen", ""), screen]));
@@ -97,8 +122,8 @@
   function paintPixelCat(element, cat) {
     // Eye anchors are measured within each sprite-sheet cell.
     const eyes = {
-      tam: [58, 48, 80, 44], abu: [50, 49, 72, 45],
-      comot: [57, 44, 79, 41], oyen: [50, 46, 71, 42],
+      tam: [58, 48, 80, 44], abu: [49, 43, 68, 40],
+      comot: [50, 49, 72, 45], oyen: [50, 46, 71, 42],
       tompok: [57, 37, 79, 34], miko: [50, 39, 72, 36]
     }[cat.id];
     ["--eye-left-x", "--eye-left-y", "--eye-right-x", "--eye-right-y"].forEach((key, index) => {
@@ -106,6 +131,7 @@
     });
     element.style.setProperty("--sprite-x", cat.spriteX);
     element.style.setProperty("--sprite-y", cat.spriteY);
+    element.classList.toggle("pixel-cat--abu", cat.id === "abu");
     element.setAttribute("aria-label", cat.name);
   }
 
@@ -128,6 +154,7 @@
         <span class="cat-card__art pixel-cat" aria-hidden="true" style="--sprite-x:${cat.spriteX};--sprite-y:${cat.spriteY}"></span>
         <span class="cat-card__name">${cat.name}</span>
       `;
+      card.querySelector(".pixel-cat").classList.toggle("pixel-cat--abu", cat.id === "abu");
       card.addEventListener("click", () => {
         game.selected = cat;
         syncCatArt();
@@ -245,16 +272,16 @@
   }
 
   function difficultyBand(elapsed) {
-    return Math.min(3, Math.floor(elapsed / 15));
+    return Math.min(3, Math.floor(elapsed / 7.5));
   }
 
   function updateSpawning(delta, elapsed) {
     const band = difficultyBand(elapsed);
-    const spawnEvery = [.94, .78, .64, .53][band];
+    const spawnEvery = [.82, .68, .56, .46][band];
     game.spawnClock += delta;
-    const cap = [3, 4, 5, 6][band];
+    const cap = [4, 5, 6, 7][band];
     if (game.spawnClock < spawnEvery || game.items.length >= cap) return;
-    game.spawnClock -= spawnEvery;
+    game.spawnClock = 0;
     spawnItem(band, elapsed);
   }
 
@@ -262,7 +289,8 @@
     const bounds = gameStage.getBoundingClientRect();
     const width = bounds.width;
     const height = bounds.height;
-    const size = Math.round(Math.min(width * .28, 112));
+    const size = Math.round(Math.min(width * .20, 80));
+    const startY = -size / 2 - 12;
     let type = chooseItemType(band, elapsed);
     let x = size / 2 + 10 + Math.random() * Math.max(1, width - size - 20);
 
@@ -273,27 +301,26 @@
     const el = document.createElement("div");
     el.className = `falling-item falling-item--${type.kind}${type.hazard ? " falling-item--hazard" : ""}${type.kind === "bomb" ? " falling-item--bomb" : ""}`;
     el.style.setProperty("--item-size", `${size}px`);
-    el.style.left = `${x}px`;
-    el.style.top = "96px";
+    el.style.transform = `translate3d(${x - size / 2}px, ${startY - size / 2}px, 0)`;
     if (type.kind === "classic") {
-      const image = CLASSIC_COOKIES[Math.floor(Math.random() * CLASSIC_COOKIES.length)];
-      el.innerHTML = `<img src="${image}" alt="" />`;
-    } else if (type.kind === "sneaky") {
-      el.innerHTML = `<img src="${CLASSIC_COOKIES[0]}" alt="" />`;
-      el.setAttribute("aria-label", "Sneaky Drop plus 10 points");
-    } else if (type.kind === "fishbone" || type.kind === "shoe" || type.kind === "bomb") {
+      const cookie = CLASSIC_COOKIES[Math.floor(Math.random() * CLASSIC_COOKIES.length)];
+      type = { ...type, cookieCat: cookie.cat };
+      el.classList.toggle("falling-item--favorite", cookie.cat === game.selected.id);
+      el.innerHTML = `<img src="${cookie.src}" alt="" />`;
+    } else if (type.hazard) {
       el.innerHTML = `<img class="hazard-sprite" src="${HAZARD_ASSETS[type.kind]}" alt="" />`;
     }
     itemsLayer.append(el);
 
-    const baseSpeed = height * [.205, .26, .32, .39][band];
+    const baseSpeed = height * [.205, .26, .32, .39][band] * (type.hazard ? 1.55 : 1.15);
     game.items.push({
       el,
       kind: type.kind,
+      cookieCat: type.cookieCat,
       value: type.value,
       hazard: type.hazard,
       x,
-      y: 96 - size / 2,
+      y: startY,
       size,
       speed: baseSpeed * (.88 + Math.random() * .23)
     });
@@ -301,17 +328,16 @@
 
   function chooseItemType(band, elapsed) {
     const roll = Math.random();
-    const hazardChance = [.20, .28, .36, .44][band];
-    const specialChance = .12;
-    const enoughGapSinceHazard = elapsed - game.lastHazard > [2.2, 1.8, 1.5, 1.2][band];
+    const hazardChance = [.34, .44, .54, .64][band];
+    const enoughGapSinceHazard = elapsed - game.lastHazard > [1.45, 1.15, .9, .7][band];
 
     if (roll < hazardChance && enoughGapSinceHazard) {
       game.lastHazard = elapsed;
       const hazardRoll = Math.random();
-      if (band > 0 && hazardRoll < .25 + band * .07) return { kind: "bomb", value: -2, hazard: true };
-      return hazardRoll < .55 ? { kind: "fishbone", value: -1, hazard: true } : { kind: "shoe", value: -1, hazard: true };
+      if (band > 0 && hazardRoll < .12 + band * .03) return { kind: "bomb", value: -2, hazard: true };
+      const hazards = ["fishbone", "banana", "poop"];
+      return { kind: hazards[Math.floor(Math.random() * hazards.length)], value: -1, hazard: true };
     }
-    if (roll < hazardChance + specialChance) return { kind: "sneaky", value: 10, hazard: false };
     return { kind: "classic", value: 5, hazard: false };
   }
 
@@ -320,7 +346,7 @@
     for (let index = game.items.length - 1; index >= 0; index -= 1) {
       const item = game.items[index];
       item.y += item.speed * delta;
-      item.el.style.top = `${item.y}px`;
+      item.el.style.transform = `translate3d(${item.x - item.size / 2}px, ${item.y - item.size / 2}px, 0)`;
 
       if (item.y - item.size / 2 > stageHeight + 25) {
         removeItem(index);
@@ -328,6 +354,7 @@
       }
       if (now >= game.hurtUntil && isAtMouth(item)) {
         catchItem(item, index, now);
+        if (!game.running) return;
       }
     }
   }
@@ -344,11 +371,13 @@
     const y = Math.min(item.y, gameStage.clientHeight - 110);
     removeItem(index);
     if (!item.hazard) {
-      game.score += item.value;
+      const favorite = item.cookieCat === game.selected.id;
+      const points = favorite ? 10 : 5;
+      game.score += points;
       game.cookiesCaught += 1;
       animateCat("is-eating", 330);
-      makeFloat(`+${item.value}`, x, y);
-      playSound(item.kind === "sneaky" ? "special" : "catch");
+      makeFloat(favorite ? `+${points} ♥` : `+${points}`, x, y);
+      playSound(favorite ? "special" : "catch");
     } else {
       game.lives = Math.max(0, game.lives + item.value);
       game.hurtUntil = now + 780;
@@ -392,6 +421,35 @@
     timeDisplay.textContent = String(Math.ceil(remaining));
   }
 
+  let lastResultLine = "";
+
+  function dramaticResultCopy(cat, gameOver) {
+    const name = cat.name;
+    const count = game.cookiesCaught;
+    const snacks = `${count} ${count === 1 ? "cookie" : "cookies"}`;
+    const lines = gameOver ? [
+      `${name} trusted the falling objects. A tragic mistake.`,
+      `${name}'s snack career ended in tears. Demand a rematch!`,
+      `${name} ate ${snacks}. Then chaos ate the plan.`,
+      `The snacks. The betrayal. The TEARS. ${name} needs a moment.`,
+      `${name} has fallen. The appetite lives on.`
+    ] : count === 0 ? [
+      `Not a single cookie?! ${name} is calling a family meeting.`,
+      `${name} watched the cookies fall. And the trust crumble.`,
+      `Zero cookies. ${name} would like to speak to the manager.`
+    ] : [
+      `${name} devoured ${snacks}. The timer ended. The hunger DID NOT.`,
+      `${snacks} later, ${name} still claims nobody feeds them.`,
+      `Time stole the buffet! ${name} demands justice. And more cookies.`,
+      `${name} caught ${snacks} and developed a lifelong snack obsession.`,
+      `The curtain falls. ${name} takes a bow… then searches for crumbs.`,
+      `${name} survived the snack storm. ${snacks} did not.`
+    ];
+    const choices = lines.filter((line) => line !== lastResultLine);
+    lastResultLine = choices[Math.floor(Math.random() * choices.length)];
+    return lastResultLine;
+  }
+
   function endRound(reason) {
     if (game.ending) return;
     game.ending = true;
@@ -406,12 +464,17 @@
     resultCatWrap.classList.toggle("is-dramatic", gameOver);
     resultEyebrow.textContent = gameOver ? "OH NO" : "ROUND COMPLETE";
     resultTitle.textContent = gameOver ? "GAME OVER!" : "TIME'S UP!";
-    resultCopy.textContent = gameOver
-      ? `${cat.name} ate one suspicious thing too many. The drama is real.`
-      : `You fed ${cat.name} ${game.cookiesCaught} ${game.cookiesCaught === 1 ? "cookie" : "cookies"}.`;
+    resultCopy.textContent = dramaticResultCopy(cat, gameOver);
     resultScore.textContent = String(game.score).padStart(3, "0");
     if (gameOver) playSound("gameover"); else playSound("timeup");
     showScreen("result");
+    if (game.score >= GIFT_THRESHOLD) {
+      giftOpen.disabled = false;
+      giftOpen.classList.remove("is-open");
+      giftOpen.setAttribute("aria-label", "Open your gift");
+      document.querySelector("#gift-prize").textContent = "";
+      giftDialog.showModal();
+    }
   }
 
   function moveCatTo(clientX) {
