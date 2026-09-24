@@ -6,14 +6,14 @@
     <meta name="theme-color" content="#f9d0ce" />
     <meta name="description" content="A tiny cookie-catching game starring the Sneaky Surprise cats." />
     <title>Catch Sneaky Cookie</title>
-    <link rel="icon" type="image/png" href="assets/brand/brandmark-pink-square-transparent.png" />
+    <link rel="icon" type="image/svg+xml" href="assets/brand/brandmark-pink-square-transparent.svg" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app" aria-live="polite">
       <section class="game-shell" aria-label="Sneaky Cat Cookie Drop">
         <section class="screen screen--select screen--active" id="select-screen" aria-label="Choose your cat">
-          <div class="select-brand"><img src="assets/brand/main-logo-pink.png" alt="Sneaky Surprise" /></div>
+          <div class="select-brand"><img src="assets/brand/main-logo-pink.svg" alt="Sneaky Surprise" /></div>
           <div class="cat-grid" id="cat-grid" aria-label="Choose a cat"></div>
           <button class="button button--primary button--play" id="play-button" type="button">START!!!</button>
         </section>
@@ -70,7 +70,7 @@
             <figure><img src="assets/cookies/classic-piggy.jpg" alt="Classic cookie with a little pig cookie on top" /><figcaption>Classic cookie</figcaption></figure>
             <figure><img src="assets/cookies/classic-double-choc.jpg" alt="Dark chocolate classic cookie with sugar crystals" /><figcaption>Classic cookie</figcaption></figure>
             <figure><img src="assets/cookies/classic-half-half.jpg" alt="Half vanilla and half chocolate classic cookie" /><figcaption>Classic cookie</figcaption></figure>
-            <figure><img src="assets/cookies/classic-matcha.png" alt="Matcha classic cookie with a toasted marshmallow" /><figcaption>Classic cookie</figcaption></figure>
+            <figure><img src="assets/cookies/classic-matcha.svg" alt="Matcha classic cookie with a toasted marshmallow" /><figcaption>Classic cookie</figcaption></figure>
           </div>
           <button class="button button--primary" type="button" data-go="select">Feed the cats again <span aria-hidden="true">→</span></button>
         </section>
@@ -79,8 +79,8 @@
     <dialog id="gift-dialog" class="gift-dialog" aria-label="Your lucky gift">
       <button type="button" id="gift-close" class="gift-close" aria-label="Close gift popup">×</button>
       <button type="button" id="gift-open" class="gift-box" aria-label="Open your gift">
-        <img class="gift-state gift-state--closed" src="assets/brand/gift-closed.png" alt="" />
-        <img class="gift-state gift-state--open" src="assets/brand/gift-open.png" alt="" />
+        <img class="gift-state gift-state--closed" src="assets/brand/gift-closed.svg" alt="" />
+        <img class="gift-state gift-state--open" src="assets/brand/gift-open.svg" alt="" />
       </button>
       <p id="gift-prize" aria-live="polite"></p>
     </dialog>

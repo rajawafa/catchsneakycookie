@@ -29,28 +29,28 @@
   const COOKIE_SHOP_URL = "";
 
   const CATS = [
-    { id: "tam", name: "Tam", label: "black cat", source: "assets/cats/tam.png", spriteX: "0%", spriteY: "0%" },
-    { id: "abu", name: "Abu", label: "orange and brown", source: "assets/cats/comot.png", spriteX: "0%", spriteY: "50%" },
-    { id: "comot", name: "Comot", label: "white belly and brown patches", source: "assets/cats/abu.png", spriteX: "100%", spriteY: "0%" },
-    { id: "oyen", name: "Oyen", label: "orange tabby", source: "assets/cats/oyen.png", spriteX: "100%", spriteY: "50%" },
-    { id: "tompok", name: "Tompok", label: "tuxedo", source: "assets/cats/tompok.png", spriteX: "0%", spriteY: "100%" },
-    { id: "miko", name: "Miko", label: "green & white", source: "assets/cats/miko.png", spriteX: "100%", spriteY: "100%" }
+    { id: "tam", name: "Tam", label: "black cat", source: "assets/cats/tam.svg", spriteX: "0%", spriteY: "0%" },
+    { id: "abu", name: "Abu", label: "orange and brown", source: "assets/cats/comot.svg", spriteX: "0%", spriteY: "50%" },
+    { id: "comot", name: "Comot", label: "white belly and brown patches", source: "assets/cats/abu.svg", spriteX: "100%", spriteY: "0%" },
+    { id: "oyen", name: "Oyen", label: "orange tabby", source: "assets/cats/oyen.svg", spriteX: "100%", spriteY: "50%" },
+    { id: "tompok", name: "Tompok", label: "tuxedo", source: "assets/cats/tompok.svg", spriteX: "0%", spriteY: "100%" },
+    { id: "miko", name: "Miko", label: "green & white", source: "assets/cats/miko.svg", spriteX: "100%", spriteY: "100%" }
   ];
 
   const CLASSIC_COOKIES = [
-    { cat: "tam", src: "assets/cookies/transparent/cookie-1-uniform.png" },
-    { cat: "comot", src: "assets/cookies/transparent/cookie-2-uniform.png" },
-    { cat: "oyen", src: "assets/cookies/transparent/cookie-3-uniform.png" },
-    { cat: "tompok", src: "assets/cookies/transparent/cookie-4-uniform.png" },
-    { cat: "miko", src: "assets/cookies/transparent/cookie-5-uniform.png" },
-    { cat: "abu", src: "assets/cookies/transparent/cookie-abu.png" }
+    { cat: "tam", src: "assets/cookies/transparent/cookie-1-uniform.svg" },
+    { cat: "comot", src: "assets/cookies/transparent/cookie-2-uniform.svg" },
+    { cat: "oyen", src: "assets/cookies/transparent/cookie-3-uniform.svg" },
+    { cat: "tompok", src: "assets/cookies/transparent/cookie-4-uniform.svg" },
+    { cat: "miko", src: "assets/cookies/transparent/cookie-5-uniform.svg" },
+    { cat: "abu", src: "assets/cookies/transparent/cookie-abu.svg" }
   ];
 
   const HAZARD_ASSETS = {
-    fishbone: "assets/hazards/fishbone.png",
-    bomb: "assets/hazards/bomb.png",
-    banana: "assets/hazards/banana.png",
-    poop: "assets/hazards/poop.png"
+    fishbone: "assets/hazards/fishbone.svg",
+    bomb: "assets/hazards/bomb.svg",
+    banana: "assets/hazards/banana.svg",
+    poop: "assets/hazards/poop.svg"
   };
 
   const screens = Object.fromEntries([...document.querySelectorAll(".screen")].map((screen) => [screen.id.replace("-screen", ""), screen]));
