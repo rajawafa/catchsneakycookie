@@ -120,16 +120,50 @@
     return CATS.find((cat) => cat.id === game.selected.id) || CATS[0];
   }
 
-  function paintPixelCat(element, cat) {
-    // Eye anchors are measured within each sprite-sheet cell.
+  function alignEyeEffects(element, cat) {
+    // Coordinates in the original square artwork cells, before SVG letterboxing.
     const eyes = {
-      tam: [58, 45, 80, 41], abu: [49, 40, 68, 37],
-      comot: [50, 43, 72, 42], oyen: [50, 39, 72, 37],
-      tompok: [57, 33, 79, 30], miko: [50, 35, 72, 33]
+      tam: [58.1, 45.1, 80.1, 41], abu: [48.4, 40.2, 67.5, 37.3],
+      comot: [50.2, 45.9, 72.1, 42.2], oyen: [50.4, 42, 71.3, 37.7],
+      tompok: [57, 33.2, 79.5, 29.9], miko: [50.4, 35, 72.1, 32.2]
     }[cat.id];
+    // Lower eyelid positions, with a small overlap so each stream touches its eye.
+    const tearY = {
+      tam: [48, 44], abu: [43, 40.5],
+      comot: [49, 45.5], oyen: [45.5, 41],
+      tompok: [36.5, 33], miko: [38, 35.5]
+    }[cat.id];
+    const renderedStyle = getComputedStyle(element);
+    const width = parseFloat(renderedStyle.width);
+    const height = parseFloat(renderedStyle.height);
+    if (!width || !height) return;
+    const cellSize = Math.min(width, height);
+    const singleImage = cat.id === "abu";
+    const column = parseFloat(cat.spriteX) / 100;
+    const row = parseFloat(cat.spriteY) / 50;
+    // SVG preserveAspectRatio="xMidYMid meet" centers the whole sprite sheet
+    // inside the CSS background box; its blank space must move the effects too.
+    const offsetX = singleImage ? (width - cellSize) / 2 : (1 - column) * (width - cellSize);
+    const offsetY = singleImage ? (height - cellSize) / 2 : (1.5 - row) * (height - cellSize);
     ["--eye-left-x", "--eye-left-y", "--eye-right-x", "--eye-right-y"].forEach((key, index) => {
-      element.style.setProperty(key, `${eyes[index]}%`);
+      const position = (index % 2 === 0 ? offsetX : offsetY) + cellSize * eyes[index] / 100;
+      element.style.setProperty(key, `${position}px`);
     });
+    element.style.setProperty("--tear-left-y", `${offsetY + cellSize * tearY[0] / 100}px`);
+    element.style.setProperty("--tear-right-y", `${offsetY + cellSize * tearY[1] / 100}px`);
+    element.style.setProperty("--tear-width", `${cellSize * .035}px`);
+    element.style.setProperty("--tear-height", `${cellSize * .08}px`);
+  }
+
+  const eyeCats = new WeakMap();
+  const eyeResizeObserver = new ResizeObserver((entries) => {
+    entries.forEach(({ target }) => alignEyeEffects(target, eyeCats.get(target)));
+  });
+
+  function paintPixelCat(element, cat) {
+    eyeCats.set(element, cat);
+    eyeResizeObserver.observe(element);
+    alignEyeEffects(element, cat);
     element.style.setProperty("--sprite-x", cat.spriteX);
     element.style.setProperty("--sprite-y", cat.spriteY);
     element.classList.toggle("pixel-cat--abu", cat.id === "abu");
@@ -291,7 +325,8 @@
     const width = bounds.width;
     const height = bounds.height;
     const size = Math.round(Math.min(width * .20, 80));
-    const startY = -size / 2 - 12;
+    // Every cookie and strange item begins fully above the visible play area.
+    const startY = -size / 2 - 24;
     let type = chooseItemType(band, elapsed);
     let x = size / 2 + 10 + Math.random() * Math.max(1, width - size - 20);
 
@@ -313,7 +348,7 @@
     }
     itemsLayer.append(el);
 
-    const baseSpeed = height * [.205, .26, .32, .39][band] * (type.hazard ? 1.55 : 1.15);
+    const baseSpeed = height * [.205, .26, .32, .39][band] * (type.hazard ? 1.30 : 1.15);
     game.items.push({
       el,
       kind: type.kind,

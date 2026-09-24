@@ -444,9 +444,9 @@ body, .app { background: #f9d0ce; }
   animation: selected-cat-glow 1.15s ease-in-out infinite alternate;
   will-change: filter;
   filter:
-    drop-shadow(0 0 2px #ffffff)
-    drop-shadow(0 0 5px #f37a8b)
-    drop-shadow(0 0 8px rgba(243, 122, 139, .92));
+    drop-shadow(0 0 1px #ffffff)
+    drop-shadow(0 0 2px #f37a8b)
+    drop-shadow(0 0 4px rgba(243, 122, 139, .92));
 }
 
 .cat-card.is-selected .cat-card__name {
@@ -455,8 +455,8 @@ body, .app { background: #f9d0ce; }
 }
 
 @keyframes selected-cat-glow {
-  from { filter: drop-shadow(0 0 1px #ffffff) drop-shadow(0 0 3px #f37a8b) drop-shadow(0 0 6px rgba(243, 122, 139, .8)); }
-  to { filter: drop-shadow(0 0 3px #ffffff) drop-shadow(0 0 6px #f37a8b) drop-shadow(0 0 10px rgba(243, 122, 139, 1)); }
+  from { filter: drop-shadow(0 0 0 #ffffff) drop-shadow(0 0 1px #f37a8b) drop-shadow(0 0 3px rgba(243, 122, 139, .82)); }
+  to { filter: drop-shadow(0 0 1px #ffffff) drop-shadow(0 0 3px #f37a8b) drop-shadow(0 0 5px rgba(243, 122, 139, 1)); }
 }
 
 .cat-card__art {
@@ -664,9 +664,9 @@ body, .app { background: #f9d0ce; }
 .pixel-cat.pixel-cat--abu { background-image: url("assets/cats/abu-orange-brown.svg"); background-size: 100% 100%; background-position: center; }
 .cat-card__art.pixel-cat--abu { background-size: 114% 114%; }
 .result-cat-wrap.is-dramatic::after { content: none; display: none; }
-.result-tear { display: none; position: absolute; width: 3.5%; height: 8%; background: #64b8e9; border-radius: 2px 2px 60% 60%; transform: translateX(-50%); transform-origin: top center; }
-.result-tear--left { left: var(--eye-left-x); top: calc(var(--eye-left-y) + 3%); }
-.result-tear--right { left: var(--eye-right-x); top: calc(var(--eye-right-y) + 3%); }
+.result-tear { display: none; position: absolute; width: var(--tear-width); height: var(--tear-height); background: #64b8e9; border-radius: 2px 2px 60% 60%; transform: translateX(-50%); transform-origin: top center; }
+.result-tear--left { left: var(--eye-left-x); top: var(--tear-left-y); }
+.result-tear--right { left: var(--eye-right-x); top: var(--tear-right-y); }
 .heart-eye { display: none; position: absolute; z-index: 3; width: 32px; height: 32px; place-items: center; color: #ff0000; font-family: Arial, sans-serif; font-size: 32px; line-height: 1; text-shadow: 0 1px 0 #ffffff; pointer-events: none; transform: translate(-50%, -50%); }
 .heart-eye--left { left: var(--eye-left-x); top: var(--eye-left-y); }
 .heart-eye--right { left: var(--eye-right-x); top: var(--eye-right-y); }
